@@ -1,4 +1,3 @@
-from turtle import width
 import streamlit as st
 import pandas as pd
 import datetime
@@ -148,8 +147,7 @@ tab = f"""
 
 </html><br>"""
 
-with open(r"C:\Users\Siddhant\PycharmProjects\Projects\stock\tabcss.html",
-          "r") as f:
+with open("tabcss.html", "r") as f:
     tabcss = f.read()
 tab_bar = tab.replace("<style></style>", tabcss)
 st.markdown(tab_bar, unsafe_allow_html=True)
