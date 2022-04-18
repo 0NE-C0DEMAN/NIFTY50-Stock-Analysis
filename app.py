@@ -5,7 +5,7 @@ from datetime import timedelta
 from datetime import datetime
 import yfinance as yf
 import plotly.graph_objects as go
-from pycaret.regression import load_model, predict_model
+from pycaret.regression import *
 
 # streamlit run C:/Users/Siddhant/PycharmProjects/Projects/stock/app.py --server.address=127.0.0.1
 
@@ -27,7 +27,7 @@ stocks_list = [
     'LT.NS', 'BAJFINANCE.NS', 'DIVISLAB.NS', 'TATACONSUM.NS', 'HDFCLIFE.NS',
     'M&M.NS', 'INFY.NS', 'GRASIM.NS', 'WIPRO.NS', 'COALINDIA.NS',
     'BRITANNIA.NS', 'INDUSINDBK.NS', 'BHARTIARTL.NS', 'SBILIFE.NS',
-    'ICICIBANK.NS', 'TATASTEEL.NS', 'RELIANCE.NS', 'HCLTECH.NS', 'TECHM.NS',
+    'ICICIBANK.NS', 'TATASTEEL.NS', 'RELIANCE.NS', 'HCLTECH.NS',
     'BAJAJ-AUTO.NS', 'BPCL.NS', 'TCS.NS', 'NESTLEIND.NS', 'ADANIPORTS.NS',
     'AXISBANK.NS', 'ULTRACEMCO.NS', 'CIPLA.NS', 'TITAN.NS', 'HEROMOTOCO.NS',
     'KOTAKBANK.NS', 'BAJAJFINSV.NS', 'POWERGRID.NS', 'ASIANPAINT.NS',
@@ -324,30 +324,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 #################### Forecasting ########################
-data = stock[["Date", "Close"]].iloc[-1456:]
-data['Date'] = pd.to_datetime(data['Date'])
-data['month'] = [i.month for i in data['Date']]
-data['year'] = [i.year for i in data['Date']]
-data['day_of_week'] = [i.dayofweek for i in data['Date']]
-data['day_of_year'] = [i.dayofyear for i in data['Date']]
 
-data.set_index('Date', inplace=True)
-from pycaret.regression import *
-
-s = setup(data,
-          target='Close',
-          train_size=0.95,
-          transform_target=True,
-          fold_strategy='timeseries',
-          fold=5,
-          numeric_features=['day_of_year', 'year', 'month', 'day_of_week'],
-          silent=True,
-          verbose=False,
-          session_id=2022)
-# compare all models and select best one based on MAE
-best_model = compare_models(sort='MAE', verbose=True)
-
-f = finalize_model(best_model)
 
 st_date = datetime.today().date()
 seven_days_after = st_date + timedelta(days=7)
@@ -362,17 +339,14 @@ score_df['day_of_week'] = [i.dayofweek for i in score_df['Date']]
 score_df['day_of_year'] = [i.dayofyear for i in score_df['Date']]
 
 final_forecast = score_df.copy()
-final_forecast.drop(columns=['month', 'year', 'day_of_week', 'day_of_year'],
-                    inplace=True)
+final_forecast.drop(columns=['month', 'year', 'day_of_week', 'day_of_year'], inplace=True)
 
-p = predict_model(f, data=score_df)
-p.drop(columns=['month', 'year', 'day_of_week', 'day_of_year'], inplace=True)
 
-final_forecast = pd.merge(final_forecast,
-                          p,
-                          how='left',
-                          left_on='Date',
-                          right_on='Date')
+
+l = load_model('models/' + f"{options}", verbose=False)
+p = predict_model(l, data=score_df)
+p.drop(columns=['month','year','day_of_week','day_of_year'],inplace=True)
+final_forecast = pd.merge(final_forecast, p, how = 'left', left_on='Date', right_on ='Date')
 
 ###########################################################
 
