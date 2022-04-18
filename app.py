@@ -39,12 +39,10 @@ stocks_list = [
 options = st.selectbox("Select a Stock", stocks_list)
 
 end = datetime.today().date()
-# start = end - timedelta(days=1456)
-
-
+start = end - timedelta(days=1456)
 @st.cache(allow_output_mutation=True)
-def stock_fn(options, end):
-    df = yf.download(options, end=end)
+def stock_fn(options, start, end):
+    df = yf.download(options, end=end, start = start)
     df = df.reset_index()
     df["MarktCap"] = df["Open"] * df["Volume"]
     df["MA50"] = df["Open"].rolling(50).mean()
@@ -52,7 +50,7 @@ def stock_fn(options, end):
     df["returns"] = ((df["Close"] / df["Close"].shift(1)) - 1) * 100
     return df
 
-stock = stock_fn(options,end)
+stock = stock_fn(options,start, end)
 
 closing_price = round(stock['Close'].iloc[-1], 2)
 return_percent = round(stock['returns'].iloc[-1], 2)
