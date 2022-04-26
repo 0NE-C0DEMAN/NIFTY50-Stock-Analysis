@@ -18,7 +18,7 @@ Watch a short App flow video here 👇.
 
 https://user-images.githubusercontent.com/72800256/163971875-ab68c45d-5069-4dc2-8a96-b56f68d61014.mov
 
-You can try out this app [here.](https://share.streamlit.io/0NE-C0DEMAN/nifty50_stock-analysis/app.py)
+You can try out this app [here.](https://share.streamlit.io/0ne-c0deman/nifty50-stock-analysis/app.py)
 
 ## What is a Stock market?
 
